@@ -2,11 +2,11 @@
 
 A **self-hosted**, **self-custodial**, **no-KYC** Discord bot that lets you control your own crypto wallets through slash commands in a private Discord server.
 
-- 🔒 You hold the keys. The bot runs on your machine. No third party, no signups.
-- 🪙 Pluggable multi-chain support. Ships with **Ethereum, Base, Arbitrum, Polygon, Solana**. Drop in another file to add more.
-- 🖥 Browser-based **setup wizard** generates a fresh BIP-39 wallet (or imports yours) and writes an encrypted config.
-- ✅ Every `/send` requires a button confirmation that expires in 30 seconds.
-- 🛡 Triple lock: bot only responds to your user ID, in your server, optionally in one channel.
+-  You hold the keys. The bot runs on your machine. No third party, no signups.
+-  Pluggable multi-chain support. Ships with **Ethereum, Base, Arbitrum, Polygon, Solana**. Drop in another file to add more.
+-  Browser-based **setup wizard** generates a fresh BIP-39 wallet (or imports yours) and writes an encrypted config.
+-  Every `/send` requires a button confirmation that expires in 30 seconds.
+-  Triple lock: bot only responds to your user ID, in your server, optionally in one channel.
 
 ---
 
