@@ -1,0 +1,7 @@
+node_modules/
+config/wallet.enc.json
+config/*.json
+.env
+.env.*
+*.log
+.DS_Store

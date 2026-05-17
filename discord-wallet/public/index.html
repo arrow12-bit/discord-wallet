@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>discord-wallet :: setup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700;800&family=Major+Mono+Display&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="grain"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">◆</span>
+      <span class="brand-name">DISCORD&middot;WALLET</span>
+      <span class="brand-tag">// self-hosted &middot; self-custodial &middot; no-kyc</span>
+    </div>
+    <div class="status">
+      <span class="dot"></span>
+      <span id="status-text">SETUP</span>
+    </div>
+  </header>
+
+  <main class="shell">
+    <!-- Progress -->
+    <nav class="rail" id="rail">
+      <div class="rail-step" data-step="1"><b>01</b> discord</div>
+      <div class="rail-step" data-step="2"><b>02</b> password</div>
+      <div class="rail-step" data-step="3"><b>03</b> wallet</div>
+      <div class="rail-step" data-step="4"><b>04</b> backup</div>
+      <div class="rail-step" data-step="5"><b>05</b> chains</div>
+      <div class="rail-step" data-step="6"><b>06</b> review</div>
+    </nav>
+
+    <!-- STEP 1: Discord -->
+    <section class="panel" data-step="1">
+      <div class="panel-head">
+        <h1>Discord credentials</h1>
+        <p>Connect this wallet to your private Discord. You'll need a bot you created at <a href="https://discord.com/developers/applications" target="_blank">discord.com/developers</a>.</p>
+      </div>
+
+      <div class="grid-2">
+        <label class="field">
+          <span class="label">BOT TOKEN</span>
+          <input type="password" id="botToken" placeholder="MTAxxxxxxxxxxxxxxxxxxxxx.Gxxxxx.xxxxxxxxxxxxxxxx">
+          <small>Bot &rarr; Reset Token. Don't share this.</small>
+        </label>
+
+        <label class="field">
+          <span class="label">YOUR USER ID</span>
+          <input type="text" id="userId" placeholder="123456789012345678" inputmode="numeric">
+          <small>Discord settings &rarr; Advanced &rarr; Developer Mode &rarr; right-click your name &rarr; Copy User ID.</small>
+        </label>
+
+        <label class="field">
+          <span class="label">SERVER (GUILD) ID</span>
+          <input type="text" id="guildId" placeholder="123456789012345678" inputmode="numeric">
+          <small>Right-click your server &rarr; Copy Server ID. The bot only works here.</small>
+        </label>
+
+        <label class="field">
+          <span class="label">CHANNEL ID <span class="opt">optional</span></span>
+          <input type="text" id="channelId" placeholder="leave empty to allow all channels in server" inputmode="numeric">
+          <small>If set, the bot only responds in this one channel.</small>
+        </label>
+      </div>
+
+      <div class="callout">
+        <b>Lock-down model.</b> Even with the bot token, commands only execute if the caller matches your user ID, in your server, optionally in one channel. Three layers of "is this actually me?".
+      </div>
+
+      <div class="actions">
+        <span></span>
+        <button class="btn primary" data-go="2">next &rarr;</button>
+      </div>
+    </section>
+
+    <!-- STEP 2: Password -->
+    <section class="panel hidden" data-step="2">
+      <div class="panel-head">
+        <h1>Encryption password</h1>
+        <p>Encrypts the config + private keys at rest using AES-256-GCM &middot; PBKDF2-SHA512 &middot; 600k iterations. You'll type this on every bot startup.</p>
+      </div>
+
+      <div class="grid-2">
+        <label class="field">
+          <span class="label">PASSWORD</span>
+          <input type="password" id="pw1" placeholder="at least 12 chars recommended">
+        </label>
+        <label class="field">
+          <span class="label">CONFIRM</span>
+          <input type="password" id="pw2" placeholder="type it again">
+        </label>
+      </div>
+
+      <div class="meter">
+        <div class="meter-bar"><span id="strength-bar"></span></div>
+        <div class="meter-label" id="strength-label">enter a password</div>
+      </div>
+
+      <div class="callout warn">
+        <b>No recovery.</b> If you lose this password, the config is unrecoverable. The seed phrase you'll see on the next step IS the wallet — write it down. The password only protects the file.
+      </div>
+
+      <div class="actions">
+        <button class="btn ghost" data-go="1">&larr; back</button>
+        <button class="btn primary" data-go="3">next &rarr;</button>
+      </div>
+    </section>
+
+    <!-- STEP 3: Wallet -->
+    <section class="panel hidden" data-step="3">
+      <div class="panel-head">
+        <h1>Wallet</h1>
+        <p>A single BIP-39 mnemonic derives both your EVM (Ethereum, Base, Arbitrum, Polygon, BSC…) and Solana keypairs.</p>
+      </div>
+
+      <div class="choice">
+        <button class="choice-card" data-action="generate">
+          <div class="choice-icon">▣</div>
+          <div class="choice-title">Generate new wallet</div>
+          <div class="choice-sub">24-word mnemonic, generated locally on your machine.</div>
+        </button>
+        <button class="choice-card" data-action="import">
+          <div class="choice-icon">↻</div>
+          <div class="choice-title">Import existing seed</div>
+          <div class="choice-sub">Paste a 12 / 15 / 18 / 21 / 24-word BIP-39 mnemonic.</div>
+        </button>
+      </div>
+
+      <div class="import-zone hidden" id="import-zone">
+        <label class="field">
+          <span class="label">MNEMONIC PHRASE</span>
+          <textarea id="mnemonicInput" rows="3" placeholder="word word word word ..."></textarea>
+          <small>Stored encrypted with your password.</small>
+        </label>
+        <button class="btn primary" id="doImport">import &rarr;</button>
+      </div>
+
+      <div class="actions">
+        <button class="btn ghost" data-go="2">&larr; back</button>
+        <span id="genStatus" class="hint"></span>
+      </div>
+    </section>
+
+    <!-- STEP 4: Backup -->
+    <section class="panel hidden" data-step="4">
+      <div class="panel-head">
+        <h1>Back up your seed</h1>
+        <p>This 24-word phrase IS your wallet. Write it down on paper. Store somewhere secure. <b>Anyone with these words can drain your funds.</b></p>
+      </div>
+
+      <div class="seedbox">
+        <div class="seedbox-bar">
+          <span>SEED PHRASE</span>
+          <button class="iconbtn" id="copySeed">copy</button>
+        </div>
+        <div class="seedgrid" id="seedGrid"></div>
+      </div>
+
+      <div class="addresses">
+        <div class="addr-row">
+          <span class="chip eth">ETH</span>
+          <code id="evmAddr"></code>
+        </div>
+        <div class="addr-row">
+          <span class="chip sol">SOL</span>
+          <code id="solAddr"></code>
+        </div>
+      </div>
+
+      <label class="ack">
+        <input type="checkbox" id="ackBackup">
+        <span>I have written down the 24 words. I understand losing them means losing the wallet.</span>
+      </label>
+
+      <div class="actions">
+        <button class="btn ghost" data-go="3">&larr; back</button>
+        <button class="btn primary" id="toChains" disabled>next &rarr;</button>
+      </div>
+    </section>
+
+    <!-- STEP 5: Chains -->
+    <section class="panel hidden" data-step="5">
+      <div class="panel-head">
+        <h1>Enable chains</h1>
+        <p>Toggle which chains the bot can use, and set RPC URLs. Public RPCs work for testing; for real use, get a free key from Alchemy / Helius / Infura / QuickNode.</p>
+      </div>
+
+      <div class="chain-list" id="chainList"></div>
+
+      <div class="actions">
+        <button class="btn ghost" data-go="4">&larr; back</button>
+        <button class="btn primary" data-go="6">next &rarr;</button>
+      </div>
+    </section>
+
+    <!-- STEP 6: Review -->
+    <section class="panel hidden" data-step="6">
+      <div class="panel-head">
+        <h1>Review &amp; save</h1>
+        <p>Everything below gets written to <code>config/wallet.enc.json</code>, encrypted with your password. Then you can start the bot.</p>
+      </div>
+
+      <pre class="review" id="reviewBox"></pre>
+
+      <div class="actions">
+        <button class="btn ghost" data-go="5">&larr; back</button>
+        <button class="btn primary danger" id="saveBtn">encrypt &amp; save &darr;</button>
+      </div>
+
+      <div class="done hidden" id="doneBox">
+        <h2>✓ Config saved</h2>
+        <p>Close this tab. In your terminal:</p>
+        <pre>npm start</pre>
+        <p>You'll be prompted for the password you just set. The bot will register slash commands in your server and come online.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footnote">
+    <span>local-only :: 127.0.0.1:7866</span>
+    <span>no telemetry / no network calls / no kyc</span>
+  </footer>
+
+  <script src="/setup.js"></script>
+</body>
+</html>
